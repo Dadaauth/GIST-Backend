@@ -1,0 +1,2 @@
+service: usermanagement
+runtime: python312
