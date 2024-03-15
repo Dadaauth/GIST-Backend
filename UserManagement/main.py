@@ -10,7 +10,7 @@ app = Flask(__name__)
 def hello():
     """Return a friendly HTTP greeting.
     """
-    return "The User management route!"
+    return "The User management route! Built by google build"
 
 
 if __name__ == "__main__":
