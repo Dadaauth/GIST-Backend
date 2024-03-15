@@ -33,6 +33,10 @@ class DBStorage:
     def new(self, obj):
         self.__session.add(obj)
 
+    def delete(self, obj=None):
+        if obj is not None:
+            self.__session.delete(obj)
+
     def save(self):
         self.__session.commit()
 

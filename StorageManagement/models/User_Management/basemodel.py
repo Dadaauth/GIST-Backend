@@ -20,6 +20,11 @@ class BaseModel:
         storage1.new(self)
         storage1.save()
 
+    def delete(self):
+        from ..__init__ import storage1
+        storage1.delete(self)
+        storage1.save()
+
     @classmethod
     def all(cls):
         """Returns all the instances of the class in storage"""

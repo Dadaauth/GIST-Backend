@@ -2,6 +2,10 @@ from flask import Blueprint, request, jsonify
 from models.User_Management.user import User
 
 
+#TODO: Authenticate all database queries. Authenticate the source making those queries first
+# Remember that soeone can easily sniff out information sent between the services so password based authentication
+# might not be the best.
+
 bp = Blueprint('main', __name__)
 
 @bp.route('/create_user', methods=['POST'], strict_slashes=False)
