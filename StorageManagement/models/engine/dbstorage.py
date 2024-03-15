@@ -1,10 +1,8 @@
 from sqlalchemy import create_engine, select, text
 from sqlalchemy.orm import sessionmaker, scoped_session
 
-# mySqlHost = "34.41.208.26"
 mySqlHost = "localhost"
 mySqlUser = 'root'
-# mySqlPass = '\\f.Fe7nG\\Xx\'n"P#'
 
 
 class DBStorage:
