@@ -1,20 +1,24 @@
-from flask import Flask
+from flask import Flask, jsonify, request
+from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity, jwt_required
 
+from views.auth import bp as auth_bp
 
-# If `entrypoint` is not defined in app.yaml, App Engine will look for an app
-# called `app` in `main.py`.
+# APP NAME `GIST` ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# APP NAME `GIST` ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 app = Flask(__name__)
+app.config["JWT_SECRET_KEY"] = "super-secret"
+jwt = JWTManager(app)
 
 
-@app.route("/api/v1/usermanagement/", strict_slashes=False)
-def hello():
-    """Return a friendly HTTP greeting.
+app.register_blueprint(auth_bp, url_prefix='/api/v1.0/usermanagement/auth')
+
+@app.route("/api/v1.0/usermanagement/status", strict_slashes=False)
+def status():
+    """Return the API status
     """
-    return "The User management route! Built by google build"
+    return jsonify({"status": "Ok"})
 
 
 if __name__ == "__main__":
-    # This is used when running locally only. When deploying to Google App
-    # Engine, a webserver process such as Gunicorn will serve the app. You
-    # can configure startup instructions by adding `entrypoint` to app.yaml.
     app.run(host="127.0.0.1", port=5000, debug=True)
