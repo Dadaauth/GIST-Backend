@@ -34,4 +34,8 @@ def get_post(post_id):
 def get_all_posts():
     posts = Post.all()
     if len(posts) == 0:
-        return jsonify
+        return jsonify({'msg': "No posts found"}), 404
+    list_of_posts = []
+    for post in posts:
+        list_of_posts.append(post.to_dict())
+    return jsonify(list_of_posts), 200
