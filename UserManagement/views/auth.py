@@ -49,13 +49,6 @@ def signup():
     response = requests.post(f'{storage_service_url}/usermanagement/create_user', json=request.json)
     return jsonify(response.json()), 201
 
-@bp.route('/current_user', methods=['GET'], strict_slashes=False)
-@jwt_required()
-def user():
-    current_user = get_jwt_identity()
-    return jsonify(user=current_user), 200
-
-
 @bp.route('/logout', methods=['POST'], strict_slashes=False)
 @jwt_required()
 def logout():
@@ -63,3 +56,9 @@ def logout():
     response = jsonify({"msg": "logout successful"})
     unset_jwt_cookies(response)
     return response
+
+@bp.route('/current_user', methods=['GET'], strict_slashes=False)
+@jwt_required()
+def user():
+    current_user = get_jwt_identity()
+    return jsonify(user=current_user), 200

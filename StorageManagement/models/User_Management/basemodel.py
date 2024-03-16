@@ -1,4 +1,3 @@
-from sqlalchemy.orm import declarative_base
 from sqlalchemy import Column, Integer, String, DateTime
 from uuid import uuid4
 from datetime import datetime, timezone

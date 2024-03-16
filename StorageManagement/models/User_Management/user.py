@@ -1,5 +1,5 @@
 from sqlalchemy import Column, String, ForeignKey
-from sqlalchemy.orm import relationship
+# from sqlalchemy.orm import relationship
 from uuid import uuid4
 import os
 
