@@ -6,7 +6,7 @@ from models.User_Management.user import User
 # Remember that soeone can easily sniff out information sent between the services so password based authentication
 # might not be the best.
 
-bp = Blueprint('main', __name__)
+bp = Blueprint('usermanagement_main', __name__)
 
 @bp.route('/create_user', methods=['POST'], strict_slashes=False)
 def create_user():

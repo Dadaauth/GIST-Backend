@@ -33,5 +33,5 @@ class Post(BaseModel, Base):
             self.video_url - rand_video_name
         self.user_id = kwargs['user_id']
         self.content = kwargs['content']
-        send_time = datetime.now(timezone.utc)
+        self.send_time = datetime.now(timezone.utc)
         
