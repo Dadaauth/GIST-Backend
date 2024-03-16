@@ -18,13 +18,20 @@ def create_post():
     if content is None:
         return jsonify({'msg': 'content is necessary to create a post'}), 400
 
-    response = requests.post(f'{storage_service_url}/contentmanagement/create_post', json=request.json)
+    response = requests.post(
+        f'{storage_service_url}/contentmanagement/create_post',
+        json=request.json,
+        headers={"Authorization": f"{request.headers.get('Authorization')}"}
+    )
     return jsonify(response.json()), 201
 
 @bp.route('/get_post/<post_id>', methods=['GET'], strict_slashes=False)
 @jwt_required()
 def get_post(post_id):
-    response = requests.get(f'{storage_service_url}/contentmanagement/get_post/{post_id}')
+    response = requests.get(
+        f'{storage_service_url}/contentmanagement/get_post/{post_id}',
+        headers={"Authorization": f"{request.headers.get('Authorization')}"}
+    )
     return jsonify(response.json()), response.status_code
 
 @bp.route('/delete_post/<post_id>', methods=['DELETE'], strict_slashes=False)
@@ -32,11 +39,17 @@ def get_post(post_id):
 def delete_post(post_id):
     # TODO: Check if it is the owner of the post that wants to delete the post
     # If not, no permission should be given to delete the post.
-    response = requests.delete(f"{storage_service_url}/contentmanagement/delete_post/{post_id}")
+    response = requests.delete(
+        f"{storage_service_url}/contentmanagement/delete_post/{post_id}",
+        headers={"Authorization": f"{request.headers.get('Authorization')}"}
+    )
     return jsonify(response.json()), response.status_code
 
 @bp.route('/all_posts', methods=['GET'], strict_slashes=False)
 @jwt_required()
 def all_posts():
-    response = requests.get(f'{storage_service_url}/contentmanagement/posts')
+    response = requests.get(
+        f'{storage_service_url}/contentmanagement/posts',
+        headers={"Authorization": f"{request.headers.get('Authorization')}"}
+    )
     return jsonify(response.json()), response.status_code

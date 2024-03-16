@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, request
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from flask_jwt_extended import set_access_cookies, unset_jwt_cookies
 from flask import request, jsonify
@@ -27,14 +27,14 @@ def login():
             return response, 200
     return jsonify({"msg": "Bad username or password!"}), 401
 
-@bp.route('/login_anonymous', methods=['POST'], strict_slashes=False)
+@bp.route('/login_anonymous', methods=['GET'], strict_slashes=False)
 def login_anonymous():
     email = "anonymous@anonymous.com"
     # password = "anonymous"
     anonymous_user = requests.get(f'{storage_service_url}/usermanagement/user/email/{email}')
     if anonymous_user.status_code == 404:
         return jsonify({"msg": "Anonymous user not found in storage"}), 404
-    access_token = create_access_token(identity=anonymous_user)
+    access_token = create_access_token(identity=anonymous_user.json())
     response = jsonify(access_token=access_token)
     set_access_cookies(response, access_token)
     return response, 200
@@ -45,6 +45,11 @@ def signup():
     password = request.json.get('password', None)
     if email is None or password is None:
         return jsonify({"msg": "Missing email or password!"}), 400
+    users = requests.get(f'{storage_service_url}/usermanagement/users')
+    if users.status_code != 404:
+        for user in users.json():
+            if user.get('email', None) == email:
+                return jsonify({'msg': 'User already exists!'}), 409
     # check if the user exists before creating the user.
     response = requests.post(f'{storage_service_url}/usermanagement/create_user', json=request.json)
     return jsonify(response.json()), 201
@@ -53,6 +58,8 @@ def signup():
 @jwt_required()
 def logout():
     # Logout has to work on the client. It is as simple as deleting the jwt token.
+    # logout functionality doesn't work yet. All this one does is delete cookies but the
+    # Authorization header is still beign sent
     response = jsonify({"msg": "logout successful"})
     unset_jwt_cookies(response)
     return response
