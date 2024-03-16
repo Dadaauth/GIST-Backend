@@ -6,6 +6,7 @@ import os
 from . import Base
 from .basemodel import BaseModel
 from utils.verification import verify_kwargs
+from utils.file_manipulation import rand_filename
 
 
 class User(BaseModel, Base):
@@ -27,12 +28,7 @@ class User(BaseModel, Base):
             })
         super().__init__()
 
-        pic_ext = os.path.splitext(kwargs['profile_pic_name'])[1]
-        if len(pic_ext) == 0:
-            # No file extension added
-            pic_ext = '.jpg'
-        rand_img_name = f"{uuid4()}{pic_ext}"
-
+        rand_img_name = rand_filename(kwargs['profile_pic_name'], '.jpg')
         self.profile_pic_name = rand_img_name
         self.email = kwargs['email']
         self.first_name = kwargs['first_name']

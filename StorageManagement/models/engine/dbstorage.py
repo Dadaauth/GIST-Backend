@@ -24,7 +24,7 @@ class DBStorage:
         if self.database == "User_Management":
             from ..User_Management import Base
         elif self.database == "Content_Management":
-            from ..Content_management import Base
+            from ..Content_Management import Base
         Base.metadata.create_all(self.__engine)
         session_factory = sessionmaker(bind=self.__engine, expire_on_commit=True)
         session = scoped_session(session_factory)
