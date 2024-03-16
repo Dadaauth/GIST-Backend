@@ -8,13 +8,14 @@ from views.auth import bp as auth_bp
 # APP NAME `GIST` ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # APP NAME `GIST` ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-ENVSTATUS = "development"
+ENV_STATUS = "development"
+ENV_SECRET = "asecrethacksectr"
 
 app = Flask(__name__)
-app.config["JWT_SECRET_KEY"] = "super-secret"
+app.config["JWT_SECRET_KEY"] = ENV_SECRET
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=48)
 app.config["JWT_TOKEN_LOCATION"] = ["headers", "cookies"]
-app.config["JWT_TOKEN_SECURE"] = False if ENVSTATUS == "development" else True
+app.config["JWT_TOKEN_SECURE"] = False if ENV_STATUS == "development" else True
 jwt = JWTManager(app)
 
 #TODO: JWT should get its tokens from the database for the sake of the other services
@@ -32,8 +33,6 @@ def refresh_expiring_jwts(response):
     except (RuntimeError, KeyError):
         # Case where there is not a valid JWT. Just return the response
         return response
-
-
 
 app.register_blueprint(auth_bp, url_prefix='/api/v1.0/usermanagement/auth')
 

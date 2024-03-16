@@ -1,4 +1,6 @@
 from flask import Blueprint, jsonify, request
+from flask_jwt_extended import jwt_required
+
 from models.Content_Management.post import Post
 
 #TODO: Authenticate all database queries. Authenticate the source making those queries first
@@ -8,6 +10,7 @@ from models.Content_Management.post import Post
 bp = Blueprint('contentmanagement_main', __name__)
 
 @bp.route('/create_post', methods=['POST'], strict_slashes=False)
+@jwt_required()
 def create_post():
     user_id = request.json.get('user_id', None)
     content = request.json.get('content', None)
@@ -23,6 +26,7 @@ def create_post():
     return jsonify({"msg": "The post has been added successfully"}), 201
     
 @bp.route('/get_post/<post_id>', methods=['GET'], strict_slashes=False)
+@jwt_required()
 def get_post(post_id):
     """Get a particular post by it's id from the storage"""
     post = Post.search(id=post_id)
@@ -31,6 +35,7 @@ def get_post(post_id):
     return jsonify(post[0].to_dict())
 
 @bp.route('/delete_post/<post_id>', methods=["DELETE"], strict_slashes=False)
+@jwt_required()
 def delete_post(post_id):
     post = Post.search(id=post_id)
     if post is None:
@@ -39,6 +44,7 @@ def delete_post(post_id):
     return jsonify({"msg": "Post deleted successfully"}), 200
 
 @bp.route('/posts', methods=['GET'], strict_slashes=False)
+@jwt_required()
 def get_all_posts():
     posts = Post.all()
     if len(posts) == 0:

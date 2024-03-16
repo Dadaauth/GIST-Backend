@@ -1,4 +1,6 @@
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required
+
 from models.User_Management.user import User
 
 
@@ -26,6 +28,7 @@ def create_user():
     return jsonify({"msg": "The user has been created successfully"}), 201
 
 @bp.route('/user/<user_id>', methods=['GET'], strict_slashes=False)
+@jwt_required()
 def get_user(user_id):
     """ Get a particular user based on an id"""
     user = User.search(id=user_id)
@@ -34,6 +37,7 @@ def get_user(user_id):
     return jsonify(user[0].to_dict())
 
 @bp.route('/user/email/<user_email>', methods=['GET'], strict_slashes=False)
+@jwt_required()
 def get_user_by_email(user_email):
     """ Get a particular user based on their email"""
     user = User.search(email=user_email)
@@ -42,6 +46,7 @@ def get_user_by_email(user_email):
     return jsonify(user[0].to_dict())
 
 @bp.route('/users', methods=['GET'], strict_slashes=False)
+@jwt_required()
 def get_all_users():
     users = User.all()
     if len(users) == 0:
