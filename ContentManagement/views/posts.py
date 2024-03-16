@@ -25,8 +25,9 @@ def get_post(post_id):
     return jsonify(response.json()), response.status_code
 
 @bp.route('/delete_post/<post_id>', methods=['DELETE'], strict_slashes=False)
-def delete_post():
-    pass
+def delete_post(post_id):
+    response = requests.delete(f"{storage_service_url}/contentmanagement/delete_post/{post_id}")
+    return jsonify(response.json()), response.status_code
 
 @bp.route('/all_posts', methods=['GET'], strict_slashes=False)
 def all_posts():

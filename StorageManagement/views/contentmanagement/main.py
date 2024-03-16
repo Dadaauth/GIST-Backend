@@ -30,9 +30,13 @@ def get_post(post_id):
         return jsonify({'msg': 'Post not found'}), 404
     return jsonify(post[0].to_dict())
 
-@bp.route('/delete_post/<post_id>', methods=['DELETE'], strict_slashes=False)
-def delete_post():
-    pass
+@bp.route('/delete_post/<post_id>', methods=["DELETE"], strict_slashes=False)
+def delete_post(post_id):
+    post = Post.search(id=post_id)
+    if post is None:
+        return jsonify({'msg': 'No such post'}), 404
+    post[0].delete()
+    return jsonify({"msg": "Post deleted successfully"}), 200
 
 @bp.route('/posts', methods=['GET'], strict_slashes=False)
 def get_all_posts():
