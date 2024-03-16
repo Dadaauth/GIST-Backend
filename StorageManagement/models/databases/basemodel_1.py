@@ -1,6 +1,9 @@
 from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy.orm import declarative_base
 from uuid import uuid4
 from datetime import datetime, timezone
+
+Base = declarative_base()
 
 
 class BaseModel:
@@ -14,26 +17,26 @@ class BaseModel:
         self.updated_at = datetime.now(timezone.utc)
 
     def save(self):
-        from ..__init__ import storage2
+        from ..__init__ import storage1
         self.updated_at = datetime.now(timezone.utc)
-        storage2.new(self)
-        storage2.save()
+        storage1.new(self)
+        storage1.save()
 
     def delete(self):
-        from ..__init__ import storage2
-        storage2.delete(self)
-        storage2.save()
+        from ..__init__ import storage1
+        storage1.delete(self)
+        storage1.save()
 
     @classmethod
     def all(cls):
         """Returns all the instances of the class in storage"""
-        from ..__init__ import storage2
-        return storage2.all(cls)
+        from ..__init__ import storage1
+        return storage1.all(cls)
     
     @classmethod
     def search(cls, **kwargs):
-        from ..__init__ import storage2
-        return storage2.search(cls, **kwargs)
+        from ..__init__ import storage1
+        return storage1.search(cls, **kwargs)
     
     def to_dict(self):
         """Returns a dictionary representation of the model object"""

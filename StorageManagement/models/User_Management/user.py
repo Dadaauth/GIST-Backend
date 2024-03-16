@@ -3,8 +3,7 @@ from sqlalchemy import Column, String, ForeignKey
 from uuid import uuid4
 import os
 
-from . import Base
-from .basemodel import BaseModel
+from ..databases.basemodel_1 import Base, BaseModel
 from utils.verification import verify_kwargs
 from utils.file_manipulation import rand_filename
 
