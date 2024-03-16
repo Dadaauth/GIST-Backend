@@ -17,6 +17,8 @@ app.config["JWT_TOKEN_LOCATION"] = ["headers", "cookies"]
 app.config["JWT_TOKEN_SECURE"] = False if ENVSTATUS == "development" else True
 jwt = JWTManager(app)
 
+#TODO: JWT should get its tokens from the database for the sake of the other services
+
 @app.after_request
 def refresh_expiring_jwts(response):
     try:

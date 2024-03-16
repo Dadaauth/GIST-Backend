@@ -1,8 +1,10 @@
 from flask import Flask, jsonify
 
+from views.posts import bp as posts_bp
+
 app = Flask(__name__)
 
-
+app.register_blueprint(posts_bp, url_prefix='/api/v1.0/contentmanagement/posts')
 
 @app.route('/api/v1.0/contentmanagement/status', strict_slashes=False)
 def status():

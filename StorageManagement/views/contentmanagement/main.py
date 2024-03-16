@@ -9,7 +9,7 @@ bp = Blueprint('contentmanagement_main', __name__)
 
 @bp.route('/create_post', methods=['POST'], strict_slashes=False)
 def create_post():
-    user_id = request.json.get('email', None)
+    user_id = request.json.get('user_id', None)
     content = request.json.get('content', None)
     image_url = request.json.get('image_url', None)
     video_url = request.json.get('video_url', None)
@@ -20,7 +20,7 @@ def create_post():
         video_url=video_url
     )
     new_post.save()
-    return jsonify({'msg': "The post has been added successfully"}), 201
+    return jsonify({"msg": "The post has been added successfully"}), 201
     
 @bp.route('/get_post/<post_id>', methods=['GET'], strict_slashes=False)
 def get_post(post_id):
@@ -29,6 +29,10 @@ def get_post(post_id):
     if post is None:
         return jsonify({'msg': 'Post not found'}), 404
     return jsonify(post[0].to_dict())
+
+@bp.route('/delete_post/<post_id>', methods=['DELETE'], strict_slashes=False)
+def delete_post():
+    pass
 
 @bp.route('/posts', methods=['GET'], strict_slashes=False)
 def get_all_posts():
