@@ -3,10 +3,7 @@ from flask_jwt_extended import JWTManager, get_jwt, set_access_cookies
 from flask_jwt_extended import get_jwt_identity, create_access_token
 from datetime import timedelta, timezone, datetime
 
-from views.auth import bp as auth_bp
-
-# APP NAME `GIST` ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# APP NAME `GIST` ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+from views.chat import bp as chat_bp
 
 ENV_STATUS = "development"
 ENV_SECRET = "asecrethacksectr"
@@ -34,13 +31,13 @@ def refresh_expiring_jwts(response):
         # Case where there is not a valid JWT. Just return the response
         return response
 
-app.register_blueprint(auth_bp, url_prefix='/api/v1.0/usermanagement/auth')
+app.register_blueprint(chat_bp, url_prefix='/api/v1.0/chatnotificationfeed/chat')
 
-@app.route("/api/v1.0/usermanagement/status", strict_slashes=False)
+@app.route("/api/v1.0/chatnotificationfeed/status", strict_slashes=False)
 def status():
-    """Return the API status
+    """Return the status of the API
     """
     return jsonify({"status": "Ok"})
 
-if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=5000, debug=True)
+if __name__ == '__main__':
+    app.run(host="127.0.0.1", port=5003, debug=True)

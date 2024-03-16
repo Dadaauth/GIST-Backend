@@ -1,0 +1,2 @@
+service: chatnotificationfeed
+runtime: python312
