@@ -27,7 +27,16 @@ def create_user():
 
 @bp.route('/user/<user_id>', methods=['GET'], strict_slashes=False)
 def get_user(user_id):
+    """ Get a particular user based on an id"""
     user = User.search(id=user_id)
+    if user is None:
+        return jsonify({"msg": "User not found"}), 404
+    return jsonify(user[0].to_dict())
+
+@bp.route('/user/email/<user_email>', methods=['GET'], strict_slashes=False)
+def get_user_by_email(user_email):
+    """ Get a particular user based on their email"""
+    user = User.search(email=user_email)
     if user is None:
         return jsonify({"msg": "User not found"}), 404
     return jsonify(user[0].to_dict())

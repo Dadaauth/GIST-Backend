@@ -1,5 +1,6 @@
 from flask import Blueprint
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import set_access_cookies, unset_jwt_cookies
 from flask import request, jsonify
 import requests
 
@@ -21,7 +22,24 @@ def login():
     for user in users.json():
         if user.get("email") == email and user.get("password") == password:
             access_token = create_access_token(identity=user)
-            return jsonify(access_token=access_token), 200
+            response = jsonify(access_token=access_token)
+            set_access_cookies(response, access_token)
+            return response, 200
+    return jsonify({"msg": "Bad username or password!"}), 401
+
+@bp.route('/login_anonymous', methods=['POST'], strict_slashes=False)
+def login_anonymous():
+    email = "anonymous@anonymous.com"
+    password = "anonymous"
+    anonymous_user = requests.get(f'{storage_service_url}/usermanagement/user/email/{email}')
+    if users.status_code == 404:
+        return jsonify({"msg": "No users in storage"}), 404
+    for user in users.json():
+        if user.get("email") == email and user.get("password") == password:
+            access_token = create_access_token(identity=user)
+            response = jsonify(access_token=access_token)
+            set_access_cookies(response, access_token)
+            return response, 200
     return jsonify({"msg": "Bad username or password!"}), 401
 
 
@@ -42,7 +60,10 @@ def user():
     return jsonify(user=current_user), 200
 
 
-@bp.route('/logout', methods=['GET'], strict_slashes=False)
+@bp.route('/logout', methods=['POST'], strict_slashes=False)
 @jwt_required()
 def logout():
-    pass
+    # Logout has to work on the client. It is as simple as deleting the jwt token.
+    response = jsonify({"msg": "logout successful"})
+    unset_jwt_cookies(response)
+    return response
