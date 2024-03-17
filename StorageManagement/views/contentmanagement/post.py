@@ -7,7 +7,7 @@ from models.Content_Management.post import Post
 # Remember that soeone can easily sniff out information sent between the services so password based authentication
 # might not be the best.
 
-bp = Blueprint('contentmanagement_main', __name__)
+bp = Blueprint('post', __name__)
 
 @bp.route('/create_post', methods=['POST'], strict_slashes=False)
 @jwt_required()

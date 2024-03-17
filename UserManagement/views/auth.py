@@ -50,7 +50,6 @@ def signup():
         for user in users.json():
             if user.get('email', None) == email:
                 return jsonify({'msg': 'User already exists!'}), 409
-    # check if the user exists before creating the user.
     response = requests.post(f'{storage_service_url}/usermanagement/create_user', json=request.json)
     return jsonify(response.json()), 201
 

@@ -5,7 +5,8 @@ from datetime import timedelta, timezone, datetime
 
 from models.__init__ import storage1, storage2
 from views.usermanagement.main import bp as usermanagement_bp
-from views.contentmanagement.main import bp as contentmanagement_bp
+from views.contentmanagement.post import bp as post_bp
+from views.contentmanagement.chat import bp as chat_bp
 
 ENV_STATUS = "development"
 ENV_SECRET = "asecrethacksectr"
@@ -32,7 +33,8 @@ def refresh_expiring_jwts(response):
         return response
 
 app.register_blueprint(usermanagement_bp, url_prefix='/api/v1.0/storagemanagement/usermanagement')
-app.register_blueprint(contentmanagement_bp, url_prefix='/api/v1.0/storagemanagement/contentmanagement')
+app.register_blueprint(post_bp, url_prefix='/api/v1.0/storagemanagement/contentmanagement/post')
+app.register_blueprint(chat_bp, url_prefix='/api/v1.0/storagemanagement/contentmanagement/chat')
 
 @app.route('/api/v1.0/storagemanagement/status')
 def status():
