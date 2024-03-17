@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required
 import requests
 
 bp = Blueprint('chat', __name__)
@@ -8,6 +9,7 @@ storage_service_url_production = "https://socialnet.clementauthority.me/api/v1.0
 
 
 @bp.route('/create_message', method=["POST"], strict_slashes=False)
+@jwt_required()
 def create_message():
     sender_id = request.json.get('sender_id')
     conversation_id = request.json.get('conversation_id')
@@ -31,6 +33,7 @@ def create_message():
     return jsonify(response.json()), response.status_code
 
 @bp.route('/create_conversation', methods=['POST'], strict_slashes=False)
+@jwt_required()
 def create_conversation():
     name = request.json.get('name', None)
     participants = request.json.get('participants', None)

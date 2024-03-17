@@ -26,6 +26,7 @@ def create_message():
     return jsonify({'msg': "new message saved successfully"}), 201
 
 @bp.route('/create_conversation', methods=['POST'], strict_slashes=False)
+@jwt_required()
 def create_conversation():
     conv_name = request.json.get('name', None)
     # conv_particiants should be sent as a list inside a json
