@@ -8,7 +8,7 @@ storage_service_url = "http://127.0.0.1:5001/api/v1.0/storagemanagement/"
 storage_service_url_production = "https://socialnet.clementauthority.me/api/v1.0/storagemanagement/"
 
 
-@bp.route('/create_message', method=["POST"], strict_slashes=False)
+@bp.route('/create_message', methods=["POST"], strict_slashes=False)
 @jwt_required()
 def create_message():
     sender_id = request.json.get('sender_id')

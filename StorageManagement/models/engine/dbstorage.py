@@ -22,9 +22,9 @@ class DBStorage:
     
     def reload(self):
         if self.database == "User_Management":
-            from ..User_Management import Base
+            from ..databases.basemodel_1 import Base
         elif self.database == "Content_Management":
-            from ..Content_Management import Base
+            from ..databases.basemodel_2 import Base
         Base.metadata.create_all(self.__engine)
         session_factory = sessionmaker(bind=self.__engine, expire_on_commit=True)
         session = scoped_session(session_factory)
