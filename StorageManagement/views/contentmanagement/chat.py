@@ -14,6 +14,8 @@ def create_message():
     content = request.json.get('content', None)
     image_url = request.json.get('image_url', None)
     video_url = request.json.get('video_url', None)
+    if sender_id is None or conversation_id is None:
+        return jsonify({'msg': 'sender_id or conversation_id not passed'}), 400
 
     new_message = Message(
         sender_id=sender_id,
