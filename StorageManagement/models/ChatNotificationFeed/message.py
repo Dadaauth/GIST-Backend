@@ -21,6 +21,8 @@ class Message(BaseModel, Base):
     def __init__(self, **kwargs):
         verify_kwargs(kwargs, {"sender_id", "conversation_id"})
 
+        super().__init__()
+
         if kwargs.get('content', None) is not None:
             self.content = kwargs['content']
         if kwargs.get('image_url', None) is not None:

@@ -28,7 +28,8 @@ def create_message():
             "content": content,
             "image_url": image_url,
             "video_url": video_url
-        }
+        },
+        headers={"Authorization": request.headers.get('Authorization')}
     )
     return jsonify(response.json()), response.status_code
 
@@ -42,6 +43,7 @@ def create_conversation():
         json={
             "name": name,
             "participants": participants
-        }
+        },
+        headers={"Authorization": request.headers.get('Authorization')}
     )
     return jsonify(response.json()), response.status_code
