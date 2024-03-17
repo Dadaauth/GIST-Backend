@@ -29,7 +29,7 @@ def create_message():
 def create_conversation():
     conv_name = request.json.get('name', None)
     # conv_particiants should be sent as a list inside a json
-    conv_participants = request.json.get('conv_participants', None)
+    conv_participants = request.json.get('participants', None)
 
     if conv_name is None:
         return jsonify({'msg': 'conversation name is not given'}), 400
