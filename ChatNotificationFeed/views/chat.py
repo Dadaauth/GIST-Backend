@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 from flask_jwt_extended import jwt_required
 import requests
 
@@ -31,6 +31,13 @@ def create_message():
         },
         headers={"Authorization": request.headers.get('Authorization')}
     )
+    current_app.sio.emit('message', {
+            "sender_id": sender_id,
+            "conversation_id": conversation_id,
+            "content": content,
+            "image_url": image_url,
+            "video_url": video_url
+        })
     return jsonify(response.json()), response.status_code
 
 @bp.route('/create_conversation', methods=['POST'], strict_slashes=False)
@@ -44,6 +51,15 @@ def create_conversation():
             "name": name,
             "participants": participants
         },
+        headers={"Authorization": request.headers.get('Authorization')}
+    )
+    return jsonify(response.json()), response.status_code
+
+@bp.route('/get_conversation/<conv_id>', methods=['GET'], strict_slashes=False)
+@jwt_required()
+def get_conversation(conv_id):
+    response = requests.get(
+        f'{storage_service_url}/contentmanagement/chat/get_conversation/{conv_id}',
         headers={"Authorization": request.headers.get('Authorization')}
     )
     return jsonify(response.json()), response.status_code
