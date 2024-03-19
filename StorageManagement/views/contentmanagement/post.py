@@ -12,15 +12,15 @@ bp = Blueprint('post', __name__)
 @bp.route('/create_post', methods=['POST'], strict_slashes=False)
 @jwt_required()
 def create_post():
-    user_id = request.json.get('user_id', None)
-    content = request.json.get('content', None)
-    image_url = request.json.get('image_url', None)
-    video_url = request.json.get('video_url', None)
+    user_id = request.form.get('user_id', None)
+    content = request.form.get('content', None)
+    image = request.files.get('image', None)
+    video = request.files.get('video', None)
     new_post = Post(
         user_id=user_id,
         content=content,
-        image_url=image_url,
-        video_url=video_url
+        image=image,
+        video=video
     )
     new_post.save()
     return jsonify({"msg": "The post has been added successfully"}), 201

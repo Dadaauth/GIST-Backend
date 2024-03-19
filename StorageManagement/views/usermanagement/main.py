@@ -12,16 +12,16 @@ bp = Blueprint('usermanagement_main', __name__)
 
 @bp.route('/create_user', methods=['POST'], strict_slashes=False)
 def create_user():
-    email = request.json.get('email', None)
-    first_name = request.json.get('first_name', None)
-    last_name = request.json.get('last_name', None)
-    profile_pic_name = request.json.get('profile_pic_name', None)
-    password = request.json.get('password', None)
+    email = request.form.get('email', None)
+    first_name = request.form.get('first_name', None)
+    last_name = request.form.get('last_name', None)
+    password = request.form.get('password', None)
+    profile_pic = request.files.get('profile_pic', None)
     new_user = User(
         email=email,
         first_name=first_name,
         last_name=last_name,
-        profile_pic_name=profile_pic_name,
+        profile_pic=profile_pic,
         password=password
     )
     new_user.save()

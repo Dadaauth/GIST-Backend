@@ -1,3 +1,4 @@
+import os
 from sqlalchemy import Column, String, DATETIME, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.mysql import LONGTEXT
@@ -42,8 +43,19 @@ class Message(BaseModel, Base):
                 kwargs['image'].save(f"temp/{self.image_url}") # ~~~~ Save to a temporary folder ~~~~
                 # ~~~~~~ SAVE TO GOOGLE CLOUD STORAGE ~~~~~~
                 blob = bucket.blob(f"messages_media/{self.image_url}")
-                blob.upload_from_filename("temp/" + self.image_url)
+                with open("temp/" + self.image_url, "rb") as file:
+                    blob.upload_from_file(file)
                 # ~~~~~~ SAVE TO GOOGLE CLOUD STORAGE ~~~~~~
+                # ~~~~~~ DELETE FROM TEMPORARY FOLDER ~~~~~~
+                try:
+                    os.remove("temp/" + self.image_url)
+                except PermissionError: 
+                    print("Insufficient permissions to delete file")
+                except FileNotFoundError:
+                    print("File not found")
+                except OSError as error:
+                    print("Error deleting file:", error)
+                # ~~~~~~ DELETE FROM TEMPORARY FOLDER ~~~~~~
         if kwargs.get('video', None) is not None:
             if kwargs['video'].filename != '':
                 kwargs['video'].filename = secure_filename(kwargs['video'].filename)
@@ -51,8 +63,19 @@ class Message(BaseModel, Base):
                 kwargs['video'].save(f"temp/{self.video_url}") # ~~~~ Save to a temporary folder ~~~~
                 # ~~~~~~ SAVE TO GOOGLE CLOUD STORAGE ~~~~~~
                 blob = bucket.blob(f"messages_media/{self.video_url}")
-                blob.upload_from_filename("temp/" + self.video_url)
+                with open("temp/" + self.video_url, "rb") as file:
+                    blob.upload_from_file(file)
                 # ~~~~~~ SAVE TO GOOGLE CLOUD STORAGE ~~~~~~
+                # ~~~~~~ DELETE FROM TEMPORARY FOLDER ~~~~~~
+                try:
+                    os.remove("temp/" + self.video_url)
+                except PermissionError: 
+                    print("Insufficient permissions to delete file")
+                except FileNotFoundError:
+                    print("File not found")
+                except OSError as error:
+                    print("Error deleting file:", error)
+                # ~~~~~~ DELETE FROM TEMPORARY FOLDER ~~~~~~
 
         self.sender_id = kwargs['sender_id']
         self.conversation_id = kwargs['conversation_id']

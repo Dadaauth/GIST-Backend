@@ -1,11 +1,21 @@
+import os
 from sqlalchemy import Column, String, ForeignKey
 # from sqlalchemy.orm import relationship
 from uuid import uuid4
-import os
+from werkzeug.utils import secure_filename
+from google.cloud import storage
 
 from ..databases.basemodel_1 import Base, BaseModel
 from utils.verification import verify_kwargs
 from utils.file_manipulation import rand_filename
+
+
+# ~~~~~~~ GOOGLE CLOUD STORAGE ~~~~~~~
+storage_client = storage.Client()
+bucket_name = "innovatetogether-hub.appspot.com"
+bucket = storage_client.bucket(bucket_name)
+# ~~~~~~ GOOGLE CLOUD STORAGE ~~~~~~~
+
 
 
 class User(BaseModel, Base):
@@ -23,12 +33,32 @@ class User(BaseModel, Base):
             "first_name",
             "last_name",
             "password",
-            "profile_pic_name"
-            })
+            "profile_pic"
+        })
         super().__init__()
 
-        rand_img_name = rand_filename(kwargs['profile_pic_name'], '.jpg')
-        self.profile_pic_name = rand_img_name
+        # ~~~~ IMAGE HANDLING ~~~~~~~~~~~
+        kwargs['profile_pic'].filename = secure_filename(kwargs['profile_pic'].filename)
+        self.profile_pic_name = rand_filename(kwargs['profile_pic'].filename, '.jpg')
+        kwargs['profile_pic'].save(f"temp/{self.profile_pic_name}") # ~~~~ Save to a temporary folder ~~~~
+        # ~~~~~~ SAVE TO GOOGLE CLOUD STORAGE ~~~~~~
+        blob = bucket.blob(f"profile_media/{self.profile_pic_name}")
+        with open("temp/" + self.profile_pic_name, "rb") as file:
+            blob.upload_from_file(file)
+        # ~~~~~~ SAVE TO GOOGLE CLOUD STORAGE ~~~~~~
+        # ~~~~~~ DELETE FROM TEMPORARY FOLDER ~~~~~~
+        try:
+            os.remove("temp/" + self.profile_pic_name)
+            print("File deleted successfully")
+        except PermissionError: 
+            print("Insufficient permissions to delete file")
+        except FileNotFoundError:
+            print("File not found")
+        except OSError as error:
+            print("Error deleting file:", error)
+        # ~~~~~~ DELETE FROM TEMPORARY FOLDER ~~~~~~
+        # ~~~~ IMAGE HANDLING ~~~~~~~~~~~
+
         self.email = kwargs['email']
         self.first_name = kwargs['first_name']
         self.last_name = kwargs['last_name']

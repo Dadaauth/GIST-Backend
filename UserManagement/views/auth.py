@@ -41,8 +41,8 @@ def login_anonymous():
 
 @bp.route('/signup', methods=['POST'], strict_slashes=False)
 def signup():
-    email = request.json.get('email', None)
-    password = request.json.get('password', None)
+    email = request.form.get('email', None)
+    password = request.form.get('password', None)
     if email is None or password is None:
         return jsonify({"msg": "Missing email or password!"}), 400
     users = requests.get(f'{storage_service_url}/usermanagement/users')
@@ -50,7 +50,7 @@ def signup():
         for user in users.json():
             if user.get('email', None) == email:
                 return jsonify({'msg': 'User already exists!'}), 409
-    response = requests.post(f'{storage_service_url}/usermanagement/create_user', json=request.json)
+    response = requests.post(f'{storage_service_url}/usermanagement/create_user', data=request.form, files=request.files)
     return jsonify(response.json()), 201
 
 @bp.route('/logout', methods=['POST'], strict_slashes=False)

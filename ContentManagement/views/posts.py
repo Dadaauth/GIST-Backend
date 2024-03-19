@@ -10,17 +10,22 @@ storage_service_url_production = "https://socialnet.clementauthority.me/api/v1.0
 @bp.route('/create_post', methods=['POST'], strict_slashes=False)
 @jwt_required()
 def create_post():
-    user_id = request.json.get('user_id', None)
-    content = request.json.get('content', None)
+    user_id = request.form.get('user_id', None)
+    content = request.form.get('user_id', None)
+    image = request.files.get('image', None)
+    video = request.files.get('video', None)
 
     if user_id is None:
         return jsonify({'msg': 'A user is required to access this service. No user Id specified'}), 401
-    if content is None:
-        return jsonify({'msg': 'content is necessary to create a post'}), 400
+    if content is None and image is None and video is None:
+        return jsonify({'msg': 'No content, image or video passed to create a post. One of these is required'})
+    if content is None and image.filename == '' and video.filename == '':
+        return jsonify({'msg': 'No content, image or video passed to create a post. One of these is required'})
 
     response = requests.post(
         f'{storage_service_url}/contentmanagement/create_post',
-        json=request.json,
+        data=request.form,
+        files=request.files,
         headers={"Authorization": f"{request.headers.get('Authorization')}"}
     )
     return jsonify(response.json()), 201
