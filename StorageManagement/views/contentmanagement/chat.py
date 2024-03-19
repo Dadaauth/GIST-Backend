@@ -10,11 +10,11 @@ bp = Blueprint('chat', __name__)
 @bp.route('/create_message', methods=["POST"], strict_slashes=False)
 @jwt_required()
 def create_message():
-    sender_id = request.json.get('sender_id')
-    conversation_id = request.json.get('conversation_id')
-    content = request.json.get('content', None)
-    image_url = request.json.get('image_url', None)
-    video_url = request.json.get('video_url', None)
+    sender_id = request.form.get('sender_id')
+    conversation_id = request.form.get('conversation_id')
+    content = request.form.get('content')
+    image = request.files.get('image', None)
+    video = request.files.get('video', None)
     if sender_id is None or conversation_id is None:
         return jsonify({'msg': 'sender_id or conversation_id not passed'}), 400
 
@@ -23,8 +23,10 @@ def create_message():
     conv_participants = ConversationParticipants.search(conversation_id=conversation_id)
     if conv_participants is not None:
         for conv_part in conv_participants:
+            conv_part = conv_part.to_dict()
             if sender_id == conv_part["user_id"]:
                 sender_in_conversation = True
+
     if not sender_in_conversation:
         return jsonify({"msg": "This sender id can't be found among the conversation participants"}), 400
     
@@ -32,8 +34,8 @@ def create_message():
         sender_id=sender_id,
         conversation_id=conversation_id,
         content=content,
-        image_url=image_url,
-        video_url=video_url
+        image=image,
+        video=video
     )
     new_message.save()
     return jsonify({'msg': "new message saved successfully"}), 201

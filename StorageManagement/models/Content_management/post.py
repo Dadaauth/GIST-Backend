@@ -7,8 +7,6 @@ from sqlalchemy.dialects.mysql import LONGTEXT
 # from sqlalchemy.orm import relationship
 
 from ..databases.basemodel_2 import Base, BaseModel
-from .import Base
-from .basemodel import BaseModel
 from utils.verification import verify_kwargs
 from utils.file_manipulation import rand_filename
 

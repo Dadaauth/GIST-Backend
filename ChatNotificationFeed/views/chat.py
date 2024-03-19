@@ -11,33 +11,27 @@ storage_service_url_production = "https://socialnet.clementauthority.me/api/v1.0
 @bp.route('/create_message', methods=["POST"], strict_slashes=False)
 @jwt_required()
 def create_message():
-    sender_id = request.json.get('sender_id')
-    conversation_id = request.json.get('conversation_id')
-    content = request.json.get('content', None)
-    image_url = request.json.get('image_url', None)
-    video_url = request.json.get('video_url', None)
+    sender_id = request.form.get('sender_id')
+    conversation_id = request.form.get('conversation_id')
+    content = request.form.get('content', None)
+    image = request.files.get('image', None)
+    video = request.files.get('video', None)
 
     # Check that the sender_id belongs to an actual user
     # in storage
-
     response = requests.post(
         f"{storage_service_url}/contentmanagement/chat/create_message",
-        json={
+        data={
             "sender_id": sender_id,
             "conversation_id": conversation_id,
             "content": content,
-            "image_url": image_url,
-            "video_url": video_url
+        },
+        files={
+            "image": image,
+            "video": video
         },
         headers={"Authorization": request.headers.get('Authorization')}
     )
-    current_app.sio.emit('message', {
-            "sender_id": sender_id,
-            "conversation_id": conversation_id,
-            "content": content,
-            "image_url": image_url,
-            "video_url": video_url
-        })
     return jsonify(response.json()), response.status_code
 
 @bp.route('/create_conversation', methods=['POST'], strict_slashes=False)
