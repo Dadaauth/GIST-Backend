@@ -23,7 +23,7 @@ def create_post():
         return jsonify({'msg': 'No content, image or video passed to create a post. One of these is required'})
 
     response = requests.post(
-        f'{storage_service_url}/contentmanagement/create_post',
+        f'{storage_service_url}/contentmanagement/post/create_post',
         data=request.form,
         files=request.files,
         headers={"Authorization": f"{request.headers.get('Authorization')}"}
@@ -49,7 +49,7 @@ def create_post():
 @jwt_required()
 def get_post(post_id):
     response = requests.get(
-        f'{storage_service_url}/contentmanagement/get_post/{post_id}',
+        f'{storage_service_url}/contentmanagement/post/get_post/{post_id}',
         headers={"Authorization": f"{request.headers.get('Authorization')}"}
     )
     return jsonify(response.json()), response.status_code
@@ -60,7 +60,7 @@ def delete_post(post_id):
     # TODO: Check if it is the owner of the post that wants to delete the post
     # If not, no permission should be given to delete the post.
     response = requests.delete(
-        f"{storage_service_url}/contentmanagement/delete_post/{post_id}",
+        f"{storage_service_url}/contentmanagement/post/delete_post/{post_id}",
         headers={"Authorization": f"{request.headers.get('Authorization')}"}
     )
     return jsonify(response.json()), response.status_code
@@ -69,7 +69,7 @@ def delete_post(post_id):
 @jwt_required()
 def all_posts():
     response = requests.get(
-        f'{storage_service_url}/contentmanagement/posts',
+        f'{storage_service_url}/contentmanagement/post/posts',
         headers={"Authorization": f"{request.headers.get('Authorization')}"}
     )
     return jsonify(response.json()), response.status_code
