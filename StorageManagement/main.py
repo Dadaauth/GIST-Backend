@@ -1,10 +1,11 @@
-from flask import Flask
+from flask import Flask, jsonify
 from flask_jwt_extended import JWTManager, get_jwt, set_access_cookies
 from flask_jwt_extended import get_jwt_identity, create_access_token
 from datetime import timedelta, timezone, datetime
 
-from models.__init__ import storage1, storage2
-from views.usermanagement.main import bp as usermanagement_bp
+# from models.__init__ import storage1, storage2
+from views.usermanagement.user import bp as user_bp
+from views.usermanagement.friend import bp as friend_bp
 from views.contentmanagement.post import bp as post_bp
 from views.contentmanagement.chat import bp as chat_bp
 
@@ -32,13 +33,14 @@ def refresh_expiring_jwts(response):
         # Case where there is not a valid JWT. Just return the response
         return response
 
-app.register_blueprint(usermanagement_bp, url_prefix='/api/v1.0/storagemanagement/usermanagement')
+app.register_blueprint(user_bp, url_prefix='/api/v1.0/storagemanagement/usermanagement/user')
+app.register_blueprint(friend_bp, url_prefix='/api/v1.0/storagemanagement/usermanagement/friend')
 app.register_blueprint(post_bp, url_prefix='/api/v1.0/storagemanagement/contentmanagement/post')
 app.register_blueprint(chat_bp, url_prefix='/api/v1.0/storagemanagement/contentmanagement/chat')
 
 @app.route('/api/v1.0/storagemanagement/status')
 def status():
-    return 'Okay!'
+    return jsonify({'status': 'ok'})
 
 
 if __name__ == '__main__':

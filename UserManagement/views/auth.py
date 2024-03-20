@@ -16,7 +16,7 @@ def login():
     password = request.json.get('password', None)
     if email is None or password is None:
         return jsonify({'msg': 'missing email or password'}), 400
-    users = requests.get(f'{storage_service_url}/usermanagement/users')
+    users = requests.get(f'{storage_service_url}/usermanagement/user/users')
     if users.status_code == 404:
         return jsonify({"msg": "No users in storage"}), 404
     for user in users.json():
@@ -31,7 +31,7 @@ def login():
 def login_anonymous():
     email = "anonymous@anonymous.com"
     # password = "anonymous"
-    anonymous_user = requests.get(f'{storage_service_url}/usermanagement/user/email/{email}')
+    anonymous_user = requests.get(f'{storage_service_url}/usermanagement/user/user/email/{email}')
     if anonymous_user.status_code == 404:
         return jsonify({"msg": "Anonymous user not found in storage"}), 404
     access_token = create_access_token(identity=anonymous_user.json())
@@ -45,12 +45,12 @@ def signup():
     password = request.form.get('password', None)
     if email is None or password is None:
         return jsonify({"msg": "Missing email or password!"}), 400
-    users = requests.get(f'{storage_service_url}/usermanagement/users')
+    users = requests.get(f'{storage_service_url}/usermanagement/user/users')
     if users.status_code != 404:
         for user in users.json():
             if user.get('email', None) == email:
                 return jsonify({'msg': 'User already exists!'}), 409
-    response = requests.post(f'{storage_service_url}/usermanagement/create_user', data=request.form, files=request.files)
+    response = requests.post(f'{storage_service_url}/usermanagement/user/create_user', data=request.form, files=request.files)
     return jsonify(response.json()), 201
 
 @bp.route('/logout', methods=['POST'], strict_slashes=False)

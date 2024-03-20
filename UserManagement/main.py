@@ -4,6 +4,7 @@ from flask_jwt_extended import get_jwt_identity, create_access_token
 from datetime import timedelta, timezone, datetime
 
 from views.auth import bp as auth_bp
+from views.friend import bp as friend_bp
 
 # APP NAME `GIST` ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # APP NAME `GIST` ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -35,6 +36,7 @@ def refresh_expiring_jwts(response):
         return response
 
 app.register_blueprint(auth_bp, url_prefix='/api/v1.0/usermanagement/auth')
+app.register_blueprint(friend_bp, url_prefix='/api/v1.0/usermanagement/friend')
 
 @app.route("/api/v1.0/usermanagement/status", strict_slashes=False)
 def status():
