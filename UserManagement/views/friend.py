@@ -19,11 +19,24 @@ def add_friend():
         json=request.json,
         headers={"Authorization": request.headers.get('Authorization')}
     )
+    if response.status_code not in {400, 404, 500, 501}:
+        # send a notification to the friend
+        requests.post(
+            f"{storage_service_url}/contentmanagement/notify/add_notification",
+            json={
+                "user_id": friend_id,
+                "type": "friend requests",
+                "content": "Someone sent you a friend request"
+            },
+            headers={"Authorization": request.headers.get('Authorization')}
+        )
     return jsonify(response.json()), response.status_code
 
 @bp.route('/accept_friend', methods=['POST'], strict_slashes=False)
+@jwt_required()
 def accept_friend():
     friend_id = request.json.get('friend_id', None)
+    user = get_jwt_identity()
 
     if friend_id is None:
         return jsonify({'msg': 'friend_id is not present in request'}), 400
@@ -32,6 +45,17 @@ def accept_friend():
         json=request.json,
         headers={"Authorization": request.headers.get('Authorization')}
     )
+    if response.status_code not in {400, 404, 500, 501}:
+        # send a notification to the friend
+        requests.post(
+            f"{storage_service_url}/contentmanagement/notify/add_notification",
+            json={
+                "user_id": friend_id,
+                "type": "friend requests",
+                "content": f"{user['first_name']} {user['last_name']} accepted your friend request"
+            },
+            headers={"Authorization": request.headers.get('Authorization')}
+        )
     return jsonify(response.json()), response.status_code
 
 @bp.route('/friends', methods=['GET'], strict_slashes=False)

@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from models.User_Management.friend import Friend
+from models.User_Management.user import User
 
 bp = Blueprint('friend', __name__)
 
@@ -70,7 +71,9 @@ def get_friends():
 
     list_of_friends = []
     for friend in friends:
-        list_of_friends.append(friend.to_dict())
+        user = User.search(id=friend.id)
+        if user is not None:
+            list_of_friends.append(user.to_dict())
 
     friends = Friend.search(friend_id=user_id, status="Friends")
     if friends is None and no_friends:

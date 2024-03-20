@@ -28,6 +28,18 @@ def create_post():
         files=request.files,
         headers={"Authorization": f"{request.headers.get('Authorization')}"}
     )
+    if response.status_code not in {400, 404, 500, 501}:
+        # send a notification to the friend
+        friends = requests.get(f"{storage_service_url}/")
+        requests.post(
+            f"{storage_service_url}/contentmanagement/notify/add_notification",
+            json={
+                "user_id": friend_id,
+                "type": "friend requests",
+                "content": "Someone sent you a friend request"
+            },
+            headers={"Authorization": request.headers.get('Authorization')}
+        )
     return jsonify(response.json()), 201
 
 @bp.route('/get_post/<post_id>', methods=['GET'], strict_slashes=False)
