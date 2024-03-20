@@ -65,22 +65,24 @@ def get_friends():
     no_friends = False
     user_id = get_jwt_identity()['id']
 
+    list_of_friends = []
     friends = Friend.search(user_id=user_id, status="friends")
     if friends is None:
         no_friends = True
+    else:
+        for friend in friends:
+            user = User.search(id=friend.id)
+            if user is not None:
+                list_of_friends.append(user.to_dict())
 
-    list_of_friends = []
-    for friend in friends:
-        user = User.search(id=friend.id)
-        if user is not None:
-            list_of_friends.append(user.to_dict())
-
-    friends = Friend.search(friend_id=user_id, status="Friends")
+    friends = Friend.search(friend_id=user_id, status="friends")
     if friends is None and no_friends:
         return jsonify({'msg': 'No friends found'}), 404
     else:
         for friend in friends:
-            list_of_friends.append(friend.to_dict())
+            user = User.search(id=friend.id)
+            if user is not None:
+                list_of_friends.append(user.to_dict())
 
     return jsonify(list_of_friends), 200
 
