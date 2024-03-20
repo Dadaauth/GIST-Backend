@@ -16,8 +16,11 @@ def add_notification():
         notify.save()
     except ValueError:
         return jsonify({
-            "msg": "A value error was raised. Most likely a mistake" \
-            "with the value of type sent to notification system"
+            "msg": 
+            """
+            A value error was raised. Most likely
+            a mistake with the value of type sent to notification system
+            """
         }), 400
     return jsonify({"msg": "Notification saved successfully"}), 201
 

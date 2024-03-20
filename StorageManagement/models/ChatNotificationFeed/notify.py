@@ -6,7 +6,7 @@ from utils.verification import verify_kwargs
 from utils.file_manipulation import rand_filename
 
 
-class Notify(Base, BaseModel):
+class Notify(BaseModel, Base):
     __tablename__ = "notifications"
 
     user_id = Column(String(150), nullable=False)
