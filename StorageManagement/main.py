@@ -8,6 +8,7 @@ from views.usermanagement.user import bp as user_bp
 from views.usermanagement.friend import bp as friend_bp
 from views.contentmanagement.post import bp as post_bp
 from views.contentmanagement.chat import bp as chat_bp
+from views.contentmanagement.notify import bp as notify_bp
 
 ENV_STATUS = "development"
 ENV_SECRET = "asecrethacksectr"
@@ -37,6 +38,7 @@ app.register_blueprint(user_bp, url_prefix='/api/v1.0/storagemanagement/usermana
 app.register_blueprint(friend_bp, url_prefix='/api/v1.0/storagemanagement/usermanagement/friend')
 app.register_blueprint(post_bp, url_prefix='/api/v1.0/storagemanagement/contentmanagement/post')
 app.register_blueprint(chat_bp, url_prefix='/api/v1.0/storagemanagement/contentmanagement/chat')
+app.register_blueprint(notify_bp, url_prefix="/api/v1.0/storagemanagement/contentmanagement/notify")
 
 @app.route('/api/v1.0/storagemanagement/status')
 def status():
