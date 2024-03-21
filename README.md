@@ -1,2 +1,2 @@
-# social-net
-The social net portfolio project
+# GIST
+The GIST social network portfolio project
