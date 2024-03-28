@@ -1,25 +1,39 @@
+import os
+
 from flask import Blueprint, request
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from flask_jwt_extended import set_access_cookies, unset_jwt_cookies
 from flask import request, jsonify
-import requests
+import jwt
+
+from StorageManagement.usermanagement import user as user_s
 
 
 bp = Blueprint('auth', __name__)
 
-storage_service_url = "http://127.0.0.1:5001/api/v1.0/storagemanagement/"
-storage_service_url_production = "https://socialnet.clementauthority.me/api/v1.0/storagemanagement/"
-
 @bp.route('/login', methods=['POST'], strict_slashes=False)
 def login():
+    """User login route
+
+    Method: POST
+    Route: /login
+    
+    Requirements:
+        email: as a json request
+        password: as a json request
+
+    Return: an authentication or authorization token if successful else an error message
+    """
     email = request.json.get('email', None)
     password = request.json.get('password', None)
     if email is None or password is None:
         return jsonify({'msg': 'missing email or password'}), 400
-    users = requests.get(f'{storage_service_url}/usermanagement/user/users')
-    if users.status_code == 404:
+    
+    users = user_s.get_all_users(redact=False)
+    if users[2] == 404:
         return jsonify({"msg": "No users in storage"}), 404
-    for user in users.json():
+    
+    for user in users[1]:
         if user.get("email") == email and user.get("password") == password:
             access_token = create_access_token(identity=user)
             response = jsonify(access_token=access_token)
@@ -29,36 +43,73 @@ def login():
 
 @bp.route('/login_anonymous', methods=['GET'], strict_slashes=False)
 def login_anonymous():
+    """Login as an anonymous user
+    
+    Method: GET
+    Route: /login_anonymous
+
+    Requirements: None
+
+    Return: An authentication token if successful else an error mesaage
+    """
     email = "anonymous@anonymous.com"
     # password = "anonymous"
-    anonymous_user = requests.get(f'{storage_service_url}/usermanagement/user/user/email/{email}')
-    if anonymous_user.status_code == 404:
+    anonymous_user = user_s.get_user_by_email(email)
+    if anonymous_user[2] == 404:
         return jsonify({"msg": "Anonymous user not found in storage"}), 404
-    access_token = create_access_token(identity=anonymous_user.json())
+
+    access_token = create_access_token(identity=anonymous_user[1])
     response = jsonify(access_token=access_token)
     set_access_cookies(response, access_token)
     return response, 200
 
 @bp.route('/signup', methods=['POST'], strict_slashes=False)
 def signup():
+    """Creates an account for a new user
+    
+    Method: POST
+    Route: /signup
+
+    Requirements:
+        form:
+            email, password, first_name, last_name
+        files:
+            profile_pic
+
+    Return: A simple success message
+    """
     email = request.form.get('email', None)
     password = request.form.get('password', None)
     if email is None or password is None:
         return jsonify({"msg": "Missing email or password!"}), 400
-    users = requests.get(f'{storage_service_url}/usermanagement/user/users')
-    if users.status_code != 404:
-        for user in users.json():
+    
+    users = user_s.get_all_users()
+    if users[0]:
+        for user in users[1]:
             if user.get('email', None) == email:
                 return jsonify({'msg': 'User already exists!'}), 409
-    response = requests.post(f'{storage_service_url}/usermanagement/user/create_user', data=request.form, files=request.files)
-    return jsonify(response.json()), 201
+            
+    response = user_s.create_user(
+        email=email,
+        password=password,
+        first_name=request.form.get('first_name'),
+        last_name=request.form.get('last_name'),
+        profile_pic=request.files.get('profile_pic')
+    )
+    return jsonify({"msg": response[1]}), response[2]
 
-@bp.route('/logout', methods=['POST'], strict_slashes=False)
+@bp.route('/logout', methods=['GET'], strict_slashes=False)
 @jwt_required()
-def logout():
-    # Logout has to work on the client. It is as simple as deleting the jwt token.
-    # logout functionality doesn't work yet. All this one does is delete cookies but the
-    # Authorization header is still beign sent
+def logout_client():
+    """Logs a user out by sending an unset cookies response
+
+    Method: GET
+    Route: /logout
+
+    Requirements: None
+
+    Return: A message and an unset cookie header
+    """
     response = jsonify({"msg": "logout successful"})
     unset_jwt_cookies(response)
     return response
@@ -66,5 +117,60 @@ def logout():
 @bp.route('/current_user', methods=['GET'], strict_slashes=False)
 @jwt_required()
 def user():
+    """Gets information about the current logged in user
+    """
     current_user = get_jwt_identity()
     return jsonify(user=current_user), 200
+
+@bp.route('/refresh', methods=['GET'], strict_slashes=False)
+@jwt_required()
+def refresh():
+    """Use unknown yet. Auto-generated by AI"""
+    print(request.headers)
+    current_user = get_jwt_identity()
+    access_token = create_access_token(identity=current_user)
+    response = jsonify(access_token=access_token)
+    set_access_cookies(response, access_token)
+    return response, 200
+
+@bp.route('/validate_token_cookie', methods=['GET'], strict_slashes=False)
+def validate_token():
+    """Validates a token presented by the user.
+            This should be used when we need to check if a user is logged in on the frontend.
+            After checking if the authentication token exists in client cookies storage, it
+            should be validated using this route
+
+    Method: GET
+    Route: /validate_token_cookie
+
+    Return: a message depicting success or failure. 200 status code on success
+    """
+    access_token = request.cookies.get('access_token_cookie')
+    if access_token is None:
+        return jsonify({"msg": "Missing access token"}), 401
+    try:
+        jwt.decode(access_token, os.environ.get('SECRET_KEY'), algorithms=["HS256"])
+    except jwt.ExpiredSignatureError:
+        return jsonify({"msg": "Token has expired"}), 401
+    except jwt.InvalidTokenError:
+        return jsonify({"msg": "Invalid token"}), 401
+    return jsonify({"msg": "Token is valid"}), 200
+
+@bp.route('/validate_token_header', methods=['GET'], strict_slashes=False)
+def validate_token_header():
+    """Same thing as def validate_token() only that this route uses headers
+            for authorization instead of cookies
+
+    Method: GET
+    Route: /validate_token_header
+    """
+    access_token = request.headers.get('Authorization')
+    if access_token is None:
+        return jsonify({"msg": "Missing access token"}), 401
+    try:
+        jwt.decode(access_token, os.environ.get('SECRET_KEY'), algorithms=["HS256"])
+    except jwt.ExpiredSignatureError:
+        return jsonify({"msg": "Token has expired"}), 401
+    except jwt.InvalidTokenError:
+        return jsonify({"msg": "Invalid token"}), 401
+    return jsonify({"msg": "Token is valid"}), 200

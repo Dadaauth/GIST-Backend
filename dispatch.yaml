@@ -1,6 +1,0 @@
-dispatch:
-  - url: socialnet.clementauthority.me/api/v1.0/usermanagement/*
-    service: usermanagement
-
-  - url: socialnet.clementauthority.me/api/v1.0/storagemanagement/*
-    service: storagemanagement
