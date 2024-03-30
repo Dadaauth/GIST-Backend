@@ -37,30 +37,31 @@ class User(BaseModel, Base):
             "last_name",
             "password",
         })
-        # print("from user class\n\n\n", os.environ.get("ENV"))
         super().__init__()
 
-        # if kwargs['profile_pic']:
-        #     # ~~~~ IMAGE HANDLING ~~~~~~~~~~~
-        #     kwargs['profile_pic'].filename = secure_filename(kwargs['profile_pic'].filename)
-        #     self.profile_pic_name = rand_filename(kwargs['profile_pic'].filename, '.jpg')
-        #     kwargs['profile_pic'].save(f"temp/{self.profile_pic_name}") # ~~~~ Save to a temporary folder ~~~~
-        #     # ~~~~~~ SAVE TO GOOGLE CLOUD STORAGE ~~~~~~
-        #     blob = bucket.blob(f"profile_media/{self.profile_pic_name}")
-        #     with open("temp/" + self.profile_pic_name, "rb") as file:
-        #         blob.upload_from_file(file)
-        #     # ~~~~~~ SAVE TO GOOGLE CLOUD STORAGE ~~~~~~
-        #     # ~~~~~~ DELETE FROM TEMPORARY FOLDER ~~~~~~
-        #     try:
-        #         os.remove("temp/" + self.profile_pic_name)
-        #         print("File deleted successfully")
-        #     except PermissionError: 
-        #         print("Insufficient permissions to delete file")
-        #     except FileNotFoundError:
-        #         print("File not found")
-        #     except OSError as error:
-        #         print("Error deleting file:", error)
-        #     # ~~~~~~ DELETE FROM TEMPORARY FOLDER ~~~~~~
+        if kwargs['profile_pic']:
+            # ~~~~ IMAGE HANDLING ~~~~~~~~~~~
+
+            kwargs['profile_pic'].filename = secure_filename(kwargs['profile_pic'].filename)
+            self.profile_pic_name = rand_filename(kwargs['profile_pic'].filename, '.jpg')
+            kwargs['profile_pic'].save(f"static/{self.profile_pic_name}")
+            # # ~~~~~~ SAVE TO GOOGLE CLOUD STORAGE ~~~~~~
+            # blob = bucket.blob(f"profile_media/{self.profile_pic_name}")
+            # with open("temp/" + self.profile_pic_name, "rb") as file:
+            #     blob.upload_from_file(file)
+            # # ~~~~~~ SAVE TO GOOGLE CLOUD STORAGE ~~~~~~
+            # # ~~~~~~ DELETE FROM TEMPORARY FOLDER ~~~~~~
+            # try:
+            #     os.remove("temp/" + self.profile_pic_name)
+            #     print("File deleted successfully")
+            # except PermissionError: 
+            #     print("Insufficient permissions to delete file")
+            # except FileNotFoundError:
+            #     print("File not found")
+            # except OSError as error:
+            #     print("Error deleting file:", error)
+            # # ~~~~~~ DELETE FROM TEMPORARY FOLDER ~~~~~~
+
             # ~~~~ IMAGE HANDLING ~~~~~~~~~~~
 
         self.email = kwargs['email']

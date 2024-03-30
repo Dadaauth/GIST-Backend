@@ -35,6 +35,7 @@ def login():
     
     for user in users[1]:
         if user.get("email") == email and user.get("password") == password:
+            del user['password']
             access_token = create_access_token(identity=user)
             response = jsonify(access_token=access_token)
             set_access_cookies(response, access_token)

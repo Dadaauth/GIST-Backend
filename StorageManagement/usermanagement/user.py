@@ -42,11 +42,13 @@ def create_user(**kwargs):
     new_user.save()
     return True, "A new user has been created successfully", 201
 
-def get_user(user_id):
+def get_user(user_id, redact=True):
     """Get a single user information based on an @user_id
     
     Argument:
         user_id: the id of the user whose information is needed
+        redact: A boolean value that determines if sensitive information like password should be removed from the user information,
+                Default is True
 
     Return:
         a tuple. [0]: true or false, [1]: the user dictionary. [2] possible status code for requests
@@ -59,7 +61,10 @@ def get_user(user_id):
     user = User.search(id=user_id)
     if user is None:
         return False, "User not found", 404
-    user_stripped = strip_attrs(user[0].to_dict(), ['password'])
+    if redact:
+        user_stripped = strip_attrs(user[0].to_dict(), ['password'])
+    else:
+        user_stripped = user[0].to_dict()
     return True, user_stripped, 200
 
 def get_user_by_email(user_email):

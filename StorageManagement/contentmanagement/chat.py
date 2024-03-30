@@ -3,6 +3,8 @@ from StorageManagement.models.conversation import Conversation, ConversationPart
 from StorageManagement.models.user import User
 from utils.verification import verify_kwargs, strip_attrs
 
+from ..usermanagement.user import get_user
+
 def create_message(**kwargs) -> tuple:
     """Adds new messages from users to the storage
 
@@ -53,8 +55,16 @@ def create_message(**kwargs) -> tuple:
         image=image,
         video=video
     )
+    message_id = new_message.id
     new_message.save() # save the new message to storage
-    return True, "new message saved successfully", 201
+    msg = Message.search(id=message_id)
+    if msg is not None:
+        msg_dict = msg[0].to_dict()
+        sender = get_user(msg_dict['sender_id']) # Retrieve details about each messae sender
+        msg_dict['sender'] = sender[1]
+    else:
+        msg_dict = {"msg": "message not found"}
+    return True, {"msg": msg_dict}, 201
 
 def create_conversation(conv_name, conv_participants: list) -> tuple:
     """Creates a conversation between users
@@ -75,6 +85,12 @@ def create_conversation(conv_name, conv_participants: list) -> tuple:
     # TODO: confirm that all conversation participants
     # sent are actual users in storage.
 
+    exists, conv_id = confirm_conversation(conv_participants[0], conv_participants[1])
+    if exists:
+        return False, {
+            'msg': "Conversation already exists, confirmation successful, please see the conversation id",
+            'conversation_id': conv_id
+        }, 200
     # Create a new Conversation object and save.
     new_conversation = Conversation(conv_name)
     new_conversation.save()
@@ -87,7 +103,7 @@ def create_conversation(conv_name, conv_participants: list) -> tuple:
     return True, {
         'msg': 'new conversation created successfully, participants added.',
         'conversation_id': new_conversation.id
-    }, 200
+    }, 201
 
 def get_conversation(conv_id) -> tuple:
     """ Get a particular conversation (including messages) from the storage
@@ -110,11 +126,17 @@ def get_conversation(conv_id) -> tuple:
     if conv_participants is None:
         return False, "error, conversation participants not found in this conversation", 404
     
-    for message in messages:
-        tmp.append(message.to_dict())
+    if messages is not None:
+        for message in messages:
+            msg_dict = message.to_dict()
+            sender = get_user(msg_dict['sender_id'])
+            msg_dict['sender'] = sender[1]
+            tmp.append(msg_dict)
     messages = tmp
-    # sort the messages based on the time
-    messages = sorted(messages, key=lambda message: message['send_time'])
+
+    if len(messages) > 0:
+        # sort the messages based on the time
+        messages = sorted(messages, key=lambda message: message['created_at'])
 
     tmp = []
     for conv_participant in conv_participants:
@@ -131,8 +153,31 @@ def get_conversation(conv_id) -> tuple:
     conv_participants = tmp
 
     return True, {
-        "msg": "conversation gotten successfully",
+        "msg": "conversation retrieved successfully",
         "conversation": conversation,
         "messages": messages,
         "conversation_participants": conv_participants
     }, 200
+
+def confirm_conversation(user_id, friend_id):
+    """Checks if any conversation previously exists between two users
+
+    Arguments:
+        user_id => user_id is the id of the logged in user
+        friend_id => the id of the other user
+
+    Return: true or false
+    """
+    CONVERSATION_CONFIMED = False
+    conv_id = ""
+    user_conversations_p = ConversationParticipants.search(user_id=user_id)
+    if user_conversations_p is not None:
+        for usr_conv in user_conversations_p:
+            conv = ConversationParticipants.search(user_id=friend_id, conversation_id=usr_conv.conversation_id)
+            if conv is None:
+                continue
+            CONVERSATION_CONFIMED = True
+            conv_id = usr_conv.conversation_id
+            break
+
+    return CONVERSATION_CONFIMED, conv_id

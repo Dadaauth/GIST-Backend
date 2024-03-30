@@ -53,7 +53,7 @@ def create_post():
         if friends[0]:
             for friend in friends[1]:
                 # send a notification to each friend of the user who posted
-                notify_s.add_notification(friend.id, "posts", f"{user['first_name']} {user['last_name']} just sent a legendary tale!")
+                notify_s.add_notification(friend['id'], "posts", f"{user['first_name']} {user['last_name']} just sent a legendary tale!")
 
     return jsonify({"msg": response[1]}), response[2]
 

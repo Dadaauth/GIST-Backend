@@ -1,7 +1,7 @@
 import os
 
 from flask import Blueprint, request, jsonify, current_app
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity
 import requests
 
 from StorageManagement.contentmanagement import chat as chat_s
@@ -24,11 +24,15 @@ def create_message():
             image, video
     Return: A status message
     """
-    sender_id = request.form.get('sender_id')
+    sender_id = request.form.get('sender_id', None)
     conversation_id = request.form.get('conversation_id')
-    content = request.form.get('content', None)
+    content = request.form.get('message', None)
     image = request.files.get('image', None)
     video = request.files.get('video', None)
+
+    print(request.form)
+    if sender_id is None:
+        sender_id = get_jwt_identity()['id']
 
     # Check that the sender_id belongs to an actual user
     # in storage
@@ -39,7 +43,7 @@ def create_message():
         image=image,
         video=video
     )
-    return jsonify({"msg": response[1]}), response[2]
+    return response[1], response[2]
 
 @bp.route('/create_conversation', methods=['POST'], strict_slashes=False)
 @jwt_required()
@@ -58,8 +62,10 @@ def create_conversation():
     name = request.json.get('name', None)
     participants = request.json.get('participants', None)
 
+    if len(participants) == 1:
+        participants.append(get_jwt_identity()['id'])
     response = chat_s.create_conversation(name, participants)
-    return jsonify({"msg": response[1]}), response[2]
+    return response[1], response[2]
 
 @bp.route('/get_conversation/<conv_id>', methods=['GET'], strict_slashes=False)
 @jwt_required()
@@ -72,7 +78,7 @@ def get_conversation(conv_id):
     Requirements:
         query or route params:
             conv_id
-    Return:  a jsonified representation of the conversation gotten or an error message
+    Return:  a json/object representation of the conversation gotten or an error message
     """
     response = chat_s.get_conversation(conv_id)
-    return jsonify({"conversation": response[1]}), response[2]
+    return response[1], response[2]
