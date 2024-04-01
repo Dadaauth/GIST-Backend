@@ -1,1 +1,4 @@
 runtime: python312
+
+env_variables:
+  CLOUD_STORAGE_BUCKET: innovatetogether-hub.appspot.com

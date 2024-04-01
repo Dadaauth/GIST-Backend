@@ -3,7 +3,7 @@ from datetime import timedelta, timezone, datetime
 
 from flask import Flask, jsonify
 from flask_jwt_extended import JWTManager, get_jwt, set_access_cookies
-from flask_jwt_extended import get_jwt_identity, create_access_token
+from flask_jwt_extended import get_jwt_identity, create_access_token, jwt_required
 from flask_cors import CORS
 import socketio
 from dotenv import load_dotenv
@@ -54,7 +54,13 @@ def create_app():
     app.register_blueprint(contentmanagement_bp, url_prefix="/api/v1.0/contentmanagement")
     app.register_blueprint(chatnotificationfeed_bp, url_prefix="/api/v1.0/chatnotificationfeed")
 
-    @app.route("/api/v1/status/", strict_slashes=False)
+    # @app.route("/api/v1.0/static/<file_name>", strict_slashes=False)
+    # @jwt_required()
+    # def status():
+    #     pass
+
+
+    @app.route("/api/v1.0/status/", strict_slashes=False)
     def status():
         """Returns the status of our API"""
         return jsonify({"status": "ok"})

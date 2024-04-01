@@ -90,6 +90,7 @@ def signup():
             if user.get('email', None) == email:
                 return jsonify({'msg': 'User already exists!'}), 409
             
+    print(request.files.get("profile_pic"))
     response = user_s.create_user(
         email=email,
         password=password,
