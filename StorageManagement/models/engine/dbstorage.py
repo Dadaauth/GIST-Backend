@@ -17,14 +17,14 @@ else:
     mysql_connection_str = f"mysql+pymysql://{mySqlUser}@{mySqlHost}:3306"
 
 if enviroment == "testing":
-    database1 = 'Test_User_Management'
-    database2 = "Test_Content_Management"
+    database1 = 'test_user_management'
+    database2 = "test_content_management"
 elif enviroment == "development":
-    database1 = "Dev_User_Management"
-    database2 = "Dev_Content_Management"
+    database1 = "dev_user_management"
+    database2 = "dev_content_management"
 elif enviroment == "production":
-    database1 = "User_Management"
-    database2 = "Content_Management"
+    database1 = "user_management"
+    database2 = "content_management"
 
 class DBStorage:
     """DBStorage class:

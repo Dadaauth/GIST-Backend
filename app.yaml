@@ -2,3 +2,9 @@ runtime: python312
 
 env_variables:
   CLOUD_STORAGE_BUCKET: innovatetogether-hub.appspot.com
+  ENV: production
+  FLASK_ENV: production
+  MYSQL_HOST: 10.74.48.2
+  MYSQL_USER: root
+  MYSQL_PASSWORD: \f.Fe7nG\Xx'n"P#
+  SECRET_KEY: b'\xd0i\xf6i\x01\xcc\x9e\xc2s\xf4\x08-\xe2\xff\xe1\x80'
