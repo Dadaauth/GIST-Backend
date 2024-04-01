@@ -5,7 +5,6 @@ from flask import Flask, jsonify
 from flask_jwt_extended import JWTManager, get_jwt, set_access_cookies
 from flask_jwt_extended import get_jwt_identity, create_access_token, jwt_required
 from flask_cors import CORS
-import socketio
 from dotenv import load_dotenv
 
 from UserManagement.main import bp as usermanagement_bp
@@ -30,10 +29,6 @@ def create_app():
     app.config["JWT_TOKEN_SECURE"] = True if enviroment == "production" else False
     app.config['JWT_REFRESH_DELTA'] = timedelta(days=7)
     jwt = JWTManager(app)
-
-    sio = socketio.Server()
-    app.wsgi_app = socketio.WSGIApp(sio, app.wsgi_app)
-    app.sio = sio
 
     @app.after_request
     def refresh_expiring_jwts(response):

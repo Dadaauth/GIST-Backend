@@ -3,14 +3,14 @@ from sqlalchemy import Column, String, ForeignKey
 # from sqlalchemy.orm import relationship
 from uuid import uuid4
 from werkzeug.utils import secure_filename
-# from google.cloud import storage
+from google.cloud import storage
 
 from .databases.basemodel_1 import Base, BaseModel
 from utils.verification import verify_kwargs
 from utils.file_manipulation import rand_filename
 
 
-enviroment = os.environ['FLASK_ENV']
+enviroment = os.environ.get('FLASK_ENV') or "development"
 
 # # ~~~~~~~ GOOGLE CLOUD STORAGE ~~~~~~~
 try:
