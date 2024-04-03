@@ -1,28 +1,31 @@
 """DBStorage class module"""
 import os
 
+from dotenv import load_dotenv
 from sqlalchemy import create_engine, select, text
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.exc import IntegrityError, DatabaseError, DataError
 
 
-enviroment = os.environ.get("ENV") or "testing"
+load_dotenv()
+
+environment = os.environ.get("ENV") or "testing"
 mySqlHost = os.environ.get('MYSQL_HOST') or "localhost"
 mySqlUser = os.environ.get('MYSQL_USER') or "root"
 mySqlPassword = os.environ.get('MYSQL_PASSWORD') or "root"
 
-if enviroment == "production":
+if environment == "production":
     mysql_connection_str = f"mysql+pymysql://{mySqlUser}:{mySqlPassword}@{mySqlHost}:3306"
 else:
     mysql_connection_str = f"mysql+pymysql://{mySqlUser}@{mySqlHost}:3306"
 
-if enviroment == "testing":
+if environment == "testing":
     database1 = 'test_user_management'
     database2 = "test_content_management"
-elif enviroment == "development":
+elif environment == "development":
     database1 = "dev_user_management"
     database2 = "dev_content_management"
-elif enviroment == "production":
+elif environment == "production":
     database1 = "user_management"
     database2 = "content_management"
 
@@ -77,6 +80,7 @@ class DBStorage:
             from ..databases.basemodel_1 import Base
         elif self.database == database2:
             from ..databases.basemodel_2 import Base
+        print(self.database, database1, database2)
         Base.metadata.create_all(self.__engine)
         session_factory = sessionmaker(bind=self.__engine, expire_on_commit=True)
         session = scoped_session(session_factory)

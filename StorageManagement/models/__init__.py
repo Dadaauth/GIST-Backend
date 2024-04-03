@@ -2,15 +2,16 @@ import os
 
 from .engine.dbstorage import DBStorage
 
-enviroment = os.environ.get("ENV")
+environment = os.environ.get("ENV")
 
-if enviroment == "testing":
+print(environment)
+if environment == "testing":
     storage1 = DBStorage('test_user_management')
     storage2 = DBStorage('test_content_management')
-elif enviroment == "development":
+elif environment == "development":
     storage1 = DBStorage('dev_user_management')
     storage2 = DBStorage('dev_content_management')
-elif enviroment == "production":
+elif environment == "production":
     storage1 = DBStorage('user_management')
     storage2 = DBStorage('content_management')
 

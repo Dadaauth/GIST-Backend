@@ -1,4 +1,5 @@
 import os
+import sys
 from datetime import timedelta, timezone, datetime
 
 from flask import Flask, jsonify
@@ -15,18 +16,18 @@ from ChatNotificationFeed.main import bp as chatnotificationfeed_bp
 # APP NAME `GIST` ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 load_dotenv()
-enviroment = os.environ.get("ENV")
+environment = os.environ.get("ENV")
 
 def create_app():
     app = Flask(__name__)
     CORS(app, supports_credentials=True)
-    app.config['ENV'] = enviroment
-    app.config['SESSION_COOKIE_SECURE'] = True if enviroment == "production" else False
+    app.config['ENV'] = environment
+    app.config['SESSION_COOKIE_SECURE'] = True if environment == "production" else False
     app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
     app.config["JWT_SECRET_KEY"] = os.environ.get("SECRET_KEY")
     app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=48)
     app.config["JWT_TOKEN_LOCATION"] = ["headers", "cookies"]
-    app.config["JWT_TOKEN_SECURE"] = True if enviroment == "production" else False
+    app.config["JWT_TOKEN_SECURE"] = True if environment == "production" else False
     app.config['JWT_REFRESH_DELTA'] = timedelta(days=7)
     jwt = JWTManager(app)
 
@@ -60,13 +61,11 @@ def create_app():
         """Returns the status of our API"""
         return jsonify({"status": "ok"})
 
+    current_dir = os.getcwd()
+    sys.path.append(current_dir)
+
     return app
 
 app = create_app()
 if __name__ == "__main__":
-    import os
-    import sys
-
-    current_dir = os.getcwd()
-    sys.path.append(current_dir)
     app.run(host="127.0.0.1", port=5000, debug=True)

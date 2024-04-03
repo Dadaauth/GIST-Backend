@@ -63,7 +63,7 @@ def get_all_posts():
     """
     posts = Post.all()
     if len(posts) == 0:
-        return False, "No posts found", 404
+        return False, [], 404
     list_of_posts = []
     for post in posts:
         post = post.to_dict()
