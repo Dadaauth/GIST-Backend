@@ -1,5 +1,5 @@
-# social-net
-The social net portfolio project
+# GIST-API
+The GIST social networking application API
 
 ## TODO:
     -> Create a testing database and a development database seperately from the production database
